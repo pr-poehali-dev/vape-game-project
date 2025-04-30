@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 interface VaporEffectProps {
   show: boolean;
-  intensity: number; // Новое свойство для интенсивности пара (0-1)
+  intensity: number; // Свойство для интенсивности пара (0-1)
 }
 
 const VaporEffect: React.FC<VaporEffectProps> = ({ show, intensity }) => {
@@ -39,7 +39,7 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show, intensity }) => {
     }
   }, [show, intensity]);
 
-  if (!show || !visible) return null;
+  if (!visible) return null;
 
   // Регулируем непрозрачность изображения в зависимости от интенсивности
   const opacity = 0.7 + (intensity * 0.3);
@@ -48,11 +48,11 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show, intensity }) => {
   const scale = 1 + (intensity * 0.5);
 
   return (
-    <div className="fixed top-1/2 left-0 right-0 h-72 overflow-hidden pointer-events-none">
+    <div className="fixed top-1/2 left-0 right-0 h-72 overflow-hidden pointer-events-none z-50">
       <div className="relative h-full w-full">
         <img 
           src="https://cdn.poehali.dev/files/32e4a12f-2d6f-4bae-817e-6c86c62dd359.jpg" 
-          alt="Человек с паром" 
+          alt="Изображение с паром" 
           className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
           style={{ 
             opacity, 
@@ -64,7 +64,7 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show, intensity }) => {
         {particles.map((particle) => (
           <div
             key={particle.id}
-            className="vapor-particle animate-vapor"
+            className="vapor-particle"
             style={{
               width: particle.size,
               height: particle.size,

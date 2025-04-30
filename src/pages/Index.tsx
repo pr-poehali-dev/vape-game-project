@@ -1,131 +1,107 @@
-import { useState, useEffect, useRef } from 'react';
-import VapeSelector from '@/components/VapeSelector';
-import VapeDisplay from '@/components/VapeDisplay';
+import { useState, useEffect } from 'react';
 import VaporEffect from '@/components/VaporEffect';
 
-const Index = () => {
-  const [selectedVape, setSelectedVape] = useState({
-    id: 1,
-    image: 'https://cdn.poehali.dev/files/97a0a71e-1209-4057-b844-b41b02bc700a.jpg',
-    name: 'Voopoo Drag X'
-  });
-  
-  const [isPressing, setIsPressing] = useState(false);
-  const [pressTime, setPressTime] = useState(0);
+export default function Index() {
   const [showVapor, setShowVapor] = useState(false);
-  const [vaporIntensity, setVaporIntensity] = useState(0);
+  const [timer, setTimer] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [showUltraText, setShowUltraText] = useState(false);
+  const [intensity, setIntensity] = useState(0);
   
-  const pressTimerRef = useRef<number | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number>(0);
-  
-  const MAX_INTENSITY_TIME = 30; // 30 секунд для максимальной интенсивности
-  
-  // Обработка нажатия кнопки
-  const handleButtonPress = () => {
-    setIsPressing(true);
-    setShowVapor(false);
-    startTimeRef.current = Date.now();
-    
-    // Запускаем таймер
-    const updateTimer = () => {
-      const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      setPressTime(elapsed);
-      animationFrameRef.current = requestAnimationFrame(updateTimer);
-    };
-    
-    animationFrameRef.current = requestAnimationFrame(updateTimer);
-  };
-  
-  // Обработка отпускания кнопки
-  const handleButtonRelease = () => {
-    if (isPressing) {
-      setIsPressing(false);
+  // Максимальное время затяжки - 30 секунд
+  const MAX_DRAG_TIME = 30;
+
+  // Обработчик нажатия кнопки
+  const handleStartDrag = () => {
+    if (!isActive) {
+      // Начинаем затяжку
+      setIsActive(true);
+      setShowUltraText(true);
+      setTimer(0);
+    } else {
+      // Заканчиваем затяжку и показываем эффект пара
+      setIsActive(false);
       
-      // Вычисляем интенсивность пара на основе времени нажатия
-      // Ограничиваем максимальным временем (30 секунд)
-      const intensity = Math.min(pressTime / MAX_INTENSITY_TIME, 1);
-      setVaporIntensity(intensity);
+      // Рассчитываем интенсивность пара на основе времени затяжки
+      // от 0 до 1, где 1 - максимальная интенсивность при 30 секундах
+      const calcIntensity = Math.min(timer / MAX_DRAG_TIME, 1);
+      setIntensity(calcIntensity);
+      
+      // Показываем эффект пара
       setShowVapor(true);
       
-      // Очищаем анимационный фрейм
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-      
-      // Сбрасываем таймер через некоторое время
-      pressTimerRef.current = window.setTimeout(() => {
-        setPressTime(0);
-      }, 5000);
+      // Скрываем эффект пара через некоторое время
+      setTimeout(() => {
+        setShowVapor(false);
+      }, 2000 + calcIntensity * 2000); // Длительность эффекта зависит от интенсивности
     }
   };
-  
-  // Очистка таймеров при размонтировании
+
+  // Эффект для обновления таймера
   useEffect(() => {
+    let interval: number | undefined;
+    
+    if (isActive) {
+      interval = window.setInterval(() => {
+        setTimer((prevTimer) => {
+          // Останавливаем таймер на максимальном значении
+          if (prevTimer >= MAX_DRAG_TIME) {
+            clearInterval(interval);
+            return MAX_DRAG_TIME;
+          }
+          return prevTimer + 0.1;
+        });
+      }, 100);
+    } else if (!isActive && timer !== 0) {
+      clearInterval(interval);
+    }
+    
     return () => {
-      if (pressTimerRef.current) {
-        clearTimeout(pressTimerRef.current);
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (interval) clearInterval(interval);
     };
-  }, []);
-  
+  }, [isActive, timer]);
+
+  // Рассчитываем процент мощности
+  const powerPercentage = Math.min(Math.round((timer / MAX_DRAG_TIME) * 100), 100);
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
-      {/* Цветной градиентный фон */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-secondary/80"
-        style={{ 
-          backgroundImage: `radial-gradient(circle at 30% 20%, rgba(14, 165, 233, 0.15), transparent 40%), 
-                           radial-gradient(circle at 70% 60%, rgba(217, 70, 239, 0.1), transparent 30%)` 
-        }}
-      />
-      
-      {/* Заголовок */}
-      <div className="absolute top-5 left-0 right-0 text-center">
-        <h1 className="text-2xl font-bold text-primary">ДРАГ 05 СМОКИНГ</h1>
-        <p className="text-sm text-muted-foreground">Выбери вейп и сделай затяжку</p>
+    <div className="flex flex-col items-center justify-between min-h-screen p-4 bg-gray-900">
+      <div className="w-full text-center py-4">
+        <h1 className="text-3xl font-bold gradient-text">ДРАГ 05 СМОКИНГ</h1>
       </div>
-      
-      {/* Надпись УЛЬТРА ТЯГА при нажатии */}
-      {isPressing && (
-        <div className="absolute top-20 left-0 right-0 text-center z-10">
-          <div className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-primary animate-pulse">
-            УЛЬТРА ТЯГА
-          </div>
-          <div className="text-xl font-bold text-primary">
-            {pressTime.toFixed(1)} сек 
-            {pressTime > 0 && (
-              <span className="ml-2 text-sm text-muted-foreground">
-                {Math.floor((pressTime / MAX_INTENSITY_TIME) * 100)}% мощности
-              </span>
-            )}
+
+      {showUltraText && (
+        <div className="fixed top-20 left-0 right-0 flex justify-center items-center gap-4 z-10">
+          <span className="text-2xl ultra-text">УЛЬТРА ТЯГА</span>
+          <div className="bg-gray-800 rounded-full px-4 py-1 text-white">
+            <span>{timer.toFixed(1)}с</span>
+            <span className="ml-2 text-green-400">{powerPercentage}%</span>
           </div>
         </div>
       )}
-      
-      {/* Отображение выбранного вейпа */}
-      <VapeDisplay 
-        vapeImage={selectedVape.image}
-        onButtonPress={handleButtonPress}
-        onButtonRelease={handleButtonRelease}
-        isPressing={isPressing}
-        pressTime={pressTime}
-      />
-      
-      {/* Эффект пара */}
-      <VaporEffect show={showVapor} intensity={vaporIntensity} />
-      
-      {/* Селектор вейпов */}
-      <VapeSelector 
-        onSelectVape={setSelectedVape}
-        selectedVapeId={selectedVape.id}
-      />
+
+      <div className="flex-grow flex items-center justify-center">
+        <button
+          className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
+          onPointerDown={handleStartDrag}
+          onPointerUp={handleStartDrag}
+          onPointerLeave={() => {
+            if (isActive) {
+              handleStartDrag();
+            }
+          }}
+        >
+          <div className="w-28 h-28 rounded-full bg-gray-900 flex items-center justify-center text-white text-xl font-bold">
+            {isActive ? "СТОП" : "СТАРТ"}
+          </div>
+        </button>
+      </div>
+
+      <VaporEffect show={showVapor} intensity={intensity} />
+
+      <div className="w-full text-center py-4 text-gray-400 text-sm">
+        © 2025 ДРАГ 05 СМОКИНГ
+      </div>
     </div>
   );
-};
-
-export default Index;
+}
