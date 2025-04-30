@@ -13,10 +13,13 @@ const Index = () => {
   const [isPressing, setIsPressing] = useState(false);
   const [pressTime, setPressTime] = useState(0);
   const [showVapor, setShowVapor] = useState(false);
+  const [vaporIntensity, setVaporIntensity] = useState(0);
   
   const pressTimerRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
+  
+  const MAX_INTENSITY_TIME = 30; // 30 секунд для максимальной интенсивности
   
   // Обработка нажатия кнопки
   const handleButtonPress = () => {
@@ -38,6 +41,11 @@ const Index = () => {
   const handleButtonRelease = () => {
     if (isPressing) {
       setIsPressing(false);
+      
+      // Вычисляем интенсивность пара на основе времени нажатия
+      // Ограничиваем максимальным временем (30 секунд)
+      const intensity = Math.min(pressTime / MAX_INTENSITY_TIME, 1);
+      setVaporIntensity(intensity);
       setShowVapor(true);
       
       // Очищаем анимационный фрейм
@@ -49,7 +57,7 @@ const Index = () => {
       // Сбрасываем таймер через некоторое время
       pressTimerRef.current = window.setTimeout(() => {
         setPressTime(0);
-      }, 3000);
+      }, 5000);
     }
   };
   
@@ -78,7 +86,7 @@ const Index = () => {
       
       {/* Заголовок */}
       <div className="absolute top-5 left-0 right-0 text-center">
-        <h1 className="text-2xl font-bold text-primary">Вейп Симулятор</h1>
+        <h1 className="text-2xl font-bold text-primary">ДРАГ 05 СМОКИНГ</h1>
         <p className="text-sm text-muted-foreground">Выбери вейп и сделай затяжку</p>
       </div>
       
@@ -88,7 +96,14 @@ const Index = () => {
           <div className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-primary animate-pulse">
             УЛЬТРА ТЯГА
           </div>
-          <div className="text-xl font-bold text-primary">{pressTime.toFixed(1)} сек</div>
+          <div className="text-xl font-bold text-primary">
+            {pressTime.toFixed(1)} сек 
+            {pressTime > 0 && (
+              <span className="ml-2 text-sm text-muted-foreground">
+                {Math.floor((pressTime / MAX_INTENSITY_TIME) * 100)}% мощности
+              </span>
+            )}
+          </div>
         </div>
       )}
       
@@ -102,7 +117,7 @@ const Index = () => {
       />
       
       {/* Эффект пара */}
-      <VaporEffect show={showVapor} />
+      <VaporEffect show={showVapor} intensity={vaporIntensity} />
       
       {/* Селектор вейпов */}
       <VapeSelector 
