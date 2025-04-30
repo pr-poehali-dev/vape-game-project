@@ -34,8 +34,8 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show }) => {
     <div className="fixed top-1/2 left-0 right-0 h-72 overflow-hidden pointer-events-none">
       <div className="relative h-full w-full">
         <img 
-          src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=464&auto=format&fit=crop" 
-          alt="Силуэт" 
+          src="https://cdn.poehali.dev/files/32e4a12f-2d6f-4bae-817e-6c86c62dd359.jpg" 
+          alt="Человек с паром" 
           className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full opacity-90"
         />
         
