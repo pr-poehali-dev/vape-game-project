@@ -1,65 +1,80 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --primary: 263.4 70% 50.4%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
-  --radius: 0.5rem;
+ 
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 217 91.2% 59.8%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 217 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    
+    --radius: 0.5rem;
+  }
 }
-
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
-  overscroll-behavior: none;
-}
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
 }
 
-@layer components {
-  .vapor-particle {
-    @apply rounded-full absolute bg-white opacity-80;
-    animation: float 2s forwards ease-out;
-  }
+/* Анимации для частиц пара */
+.vapor-particle {
+  @apply absolute rounded-full bg-white/80 opacity-0;
+  animation: rise 2s ease-out forwards;
+  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3);
 }
 
-@keyframes float {
+@keyframes rise {
   0% {
-    transform: translateY(0) scale(0.1);
-    opacity: 0;
-  }
-  10% {
+    transform: translateY(0) scale(0.5);
     opacity: 0.8;
   }
   100% {
-    transform: translateY(-200px) scale(1.5);
+    transform: translateY(-150px) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes vapor {
+  0% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-150px) scale(2);
     opacity: 0;
   }
 }
 
 .animate-vapor {
-  animation: float 2s forwards ease-out;
+  animation: vapor 2s ease-out forwards;
 }

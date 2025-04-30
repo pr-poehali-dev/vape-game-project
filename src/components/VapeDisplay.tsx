@@ -55,13 +55,6 @@ const VapeDisplay: React.FC<VapeDisplayProps> = ({
             ${isPressing ? 'bg-primary animate-pulse' : 'bg-secondary/50 border-white/20'}`}
         />
       </div>
-      
-      {isPressing && (
-        <div className="fixed bottom-32 left-0 right-0 flex flex-col items-center text-white">
-          <div className="text-2xl font-bold">ТЯГА</div>
-          <div className="text-primary text-xl">{pressTime.toFixed(1)} сек</div>
-        </div>
-      )}
     </div>
   );
 };

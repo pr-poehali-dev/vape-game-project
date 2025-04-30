@@ -82,6 +82,16 @@ const Index = () => {
         <p className="text-sm text-muted-foreground">Выбери вейп и сделай затяжку</p>
       </div>
       
+      {/* Надпись УЛЬТРА ТЯГА при нажатии */}
+      {isPressing && (
+        <div className="absolute top-20 left-0 right-0 text-center z-10">
+          <div className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-primary animate-pulse">
+            УЛЬТРА ТЯГА
+          </div>
+          <div className="text-xl font-bold text-primary">{pressTime.toFixed(1)} сек</div>
+        </div>
+      )}
+      
       {/* Отображение выбранного вейпа */}
       <VapeDisplay 
         vapeImage={selectedVape.image}

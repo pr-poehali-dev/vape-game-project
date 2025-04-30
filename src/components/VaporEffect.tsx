@@ -6,9 +6,13 @@ interface VaporEffectProps {
 
 const VaporEffect: React.FC<VaporEffectProps> = ({ show }) => {
   const [particles, setParticles] = useState<Array<{ id: number; left: string; delay: string; size: string }>>([]);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (show) {
+      // Показываем изображение и частицы
+      setVisible(true);
+      
       // Создаем частицы пара
       const newParticles = Array.from({ length: 20 }, (_, i) => ({
         id: i,
@@ -19,8 +23,9 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show }) => {
       
       setParticles(newParticles);
       
-      // Очищаем частицы после анимации
+      // Скрываем эффект через 2 секунды
       const timer = setTimeout(() => {
+        setVisible(false);
         setParticles([]);
       }, 2000);
       
@@ -28,7 +33,7 @@ const VaporEffect: React.FC<VaporEffectProps> = ({ show }) => {
     }
   }, [show]);
 
-  if (!show) return null;
+  if (!show || !visible) return null;
 
   return (
     <div className="fixed top-1/2 left-0 right-0 h-72 overflow-hidden pointer-events-none">
